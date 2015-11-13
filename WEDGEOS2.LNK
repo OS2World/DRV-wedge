@@ -1,0 +1,16 @@
+sStrat +
+sMsgs +
+sdata +
+sndiinit +
+sdevhlp +
+sysreq +
+protcall +
+sInit +
+maccalls +
+devioctl
+wedge.os2
+wedge.map /map /noi /nod
+C:\os2\DOSCALLS.LIB
+..\wedge.def;
+
+

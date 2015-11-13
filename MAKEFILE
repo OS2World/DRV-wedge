@@ -1,0 +1,173 @@
+#       Makefile for the DWB Generic model NDIS Wedge driver.
+#
+#       Definitions for assembler
+
+ASM=masm
+AFLAGS= /MX /T /Z $(ENV)
+
+#       Definitions for linker
+
+LINK= link
+LFLAGS= /noe /M
+
+#       Rules for generating object and linker response and definition files
+
+#
+# default od
+#
+!if "$(od)" == ""
+od=os2
+!endif
+
+!if "$(od)"=="os2"
+OS=OS2
+INSTR=/G2
+!else
+OS=DOS
+!endif
+df=/DBUILD$(OS)
+
+#       Rules for generating object files
+.asm.obj:
+!if "$(od)" == "dos"
+AS=$(ASM) $(AFLAGS) $(df) ..\$*.asm,$*.obj;
+!else
+!if "$(od)" == "os2"
+AS=$(ASM) $(AFLAGS) $(df) ..\$*.asm,$*.obj;
+!else
+!error od MUST be either os2 or dos
+!endif
+!endif
+
+#       List of Object files for AT driver
+
+BTDOBJ=	sStrat.obj \
+        sMsgs.obj \
+        sInit.obj \
+        sData.obj \
+        sndiinit.obj \
+        sdevhlp.obj \
+        sysreq.obj \
+        protcall.obj \
+        maccalls.obj \
+		devioctl.obj
+
+
+BTOBJ=  sStrat.obj \
+        sMsgs.obj \
+        sInit.obj \
+        sData.obj \
+        sndiinit.obj \
+        sdevhlp.obj \
+        sysreq.obj \
+        protcall.obj \
+        maccalls.obj \
+		devioctl.obj
+
+
+LST=    sStrat.obj \
+        sMsgs.obj \
+        sInit.obj \
+        sData.obj \
+        sndiinit.obj \
+        sdevhlp.obj \
+        sysreq.obj \
+        protcall.obj \
+        maccalls.obj \
+		devioctl.obj
+
+
+
+all: all1 all2
+
+all1:
+        cd $(od)
+
+all2: wedge.$(od)
+
+#        create the listing files
+
+list: $(LST)
+
+#        create driver
+
+wedge.os2: $(BTOBJ) ..\wedgeos2.lnk
+        $(LINK) $(LFLAGS) @..\wedgeos2.lnk;
+        mapsym wedge.map
+
+wedge.dos: $(BTOBJ) ..\wedgedos.lnk
+        $(LINK) $(LFLAGS) @..\wedgedos.lnk;
+        mapsym wedge.map
+
+# Dependencies follow
+
+
+sStrat.obj:     ..\sStrat.asm   \
+                ..\build.cfg    \
+                ..\segments.inc \
+                ..\ioctl.inc    \
+                ..\devhdr.inc   \
+                ..\sStrucs.Inc
+        $(AS)
+
+sData.obj:      ..\sData.asm    \
+                ..\build.cfg    \
+                ..\segments.inc \
+                ..\sStrucs.Inc  \
+				..\wedge.inc
+        $(AS)
+
+sMsgs.obj:		..\sMsgs.asm    \
+                ..\segments.Inc \
+                ..\Build.Cfg    \
+                ..\sStrucs.Inc
+        $(AS)
+
+sInit.obj:		..\sInit.asm    \
+                ..\segments.inc \
+                ..\build.cfg    \
+                ..\sStrucs.Inc  \
+                ..\sMacros.inc  \
+				..\OS2Equ.Inc
+        $(AS)
+
+sndiinit.obj:	..\sndiinit.asm \
+                ..\segments.inc \
+                ..\build.cfg    \
+                ..\sStrucs.Inc
+        $(AS)
+
+sysreq.obj:		..\sysreq.asm   \
+                ..\segments.inc \
+                ..\build.cfg    \
+                ..\sStrucs.Inc	\
+				..\wedge.inc
+        $(AS)
+
+protcall.obj: 	..\protcall.asm \
+                ..\segments.inc \
+                ..\build.cfg    \
+                ..\sStrucs.Inc
+        $(AS)
+
+maccalls.obj:	..\maccalls.asm \
+                ..\segments.inc \
+                ..\build.cfg    \
+                ..\sStrucs.Inc
+        $(AS)
+
+sdevhlp.obj:	..\sdevhlp.asm  \
+                ..\segments.inc \
+                ..\build.cfg    \
+                ..\sStrucs.Inc
+        $(AS)
+
+devioctl.obj:	..\devioctl.asm	\
+				..\build.cfg	\
+				..\sstrucs.inc	\
+				..\ioctl.inc	\
+				..\devhdr.inc	\
+				..\devhlp.inc	\
+				..\os2equ.inc	\
+				..\segments.inc
+        $(AS)
